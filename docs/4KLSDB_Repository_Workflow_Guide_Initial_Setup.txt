@@ -1,0 +1,181 @@
+# 4KLSDB Repository Workflow Guide
+
+## Initial Setup (One-time for each user/machine)
+
+### For New Team Members
+```bash
+# Clone with submodules
+git clone --recursive https://github.com/taco-group/4KLSDB.git
+cd 4KLSDB
+
+# If you get ownership errors (on servers)
+git config --global --add safe.directory $(pwd)
+git config --global --add safe.directory $(pwd)/models/sana
+git submodule update --init --recursive
+
+# Set up your Git identity
+git config --global user.name "Your Name"
+git config --global user.email "your.email@tamu.edu"
+```
+
+### For Existing Clones (Get Latest Everything)
+```bash
+cd 4KLSDB
+git pull origin main
+git submodule update --recursive
+```
+
+## Daily Workflow
+
+### Scenario 1: Making Changes to Main Repository (Dataset/Experiments)
+```bash
+cd 4KLSDB
+
+# Make your changes to dataset code, configs, etc.
+# Edit files...
+
+# Commit and push (normal Git workflow)
+git add .
+git commit -m "Add new experiment config"
+git push origin main
+```
+
+### Scenario 2: Making Changes to SANA Code
+```bash
+cd 4KLSDB/models/sana
+
+# Make your changes to SANA
+# Edit files like diffusion/data/datasets/embed_pro.py
+
+# Commit to SANA fork
+git add .
+git commit -m "Improve preprocessing for 4K dataset"
+git push origin main
+
+# IMPORTANT: Update the main repo to point to new SANA commit
+cd ../..  # Back to 4KLSDB root
+git add models/sana
+git commit -m "Update SANA submodule with preprocessing improvements"
+git push origin main
+```
+
+### Scenario 3: Getting Someone Else's SANA Changes
+```bash
+cd 4KLSDB
+
+# Pull latest main repo changes (includes submodule reference updates)
+git pull origin main
+
+# Update submodule to the new commit
+git submodule update --recursive
+
+# Verify you have the latest
+cd models/sana
+git log --oneline -3
+```
+
+## Common Commands Reference
+
+### Check Status of Everything
+```bash
+cd 4KLSDB
+
+# Main repo status
+git status
+
+# Submodule status
+git submodule status
+
+# Check what commit SANA is on
+cd models/sana
+git log --oneline -1
+```
+
+### Sync with Latest Original SANA (Optional)
+```bash
+cd 4KLSDB/models/sana
+
+# Get updates from original SANA
+git fetch upstream
+git merge upstream/main
+
+# Push merged changes to your fork
+git push origin main
+
+# Update main repo reference
+cd ../..
+git add models/sana
+git commit -m "Sync SANA with upstream updates"
+git push origin main
+```
+
+### Reset SANA to Specific Commit (If Something Breaks)
+```bash
+cd 4KLSDB/models/sana
+
+# Reset to a specific commit
+git reset --hard <commit-hash>
+git push origin main --force
+
+# Update main repo
+cd ../..
+git add models/sana
+git commit -m "Reset SANA to working version"
+git push origin main
+```
+
+## Troubleshooting
+
+### Empty SANA Directory
+```bash
+cd 4KLSDB
+git submodule update --init --recursive
+```
+
+### "Dubious Ownership" Errors
+```bash
+git config --global --add safe.directory $(pwd)
+git config --global --add safe.directory $(pwd)/models/sana
+```
+
+### SANA Not at Latest Commit
+```bash
+cd 4KLSDB
+git pull origin main
+git submodule update --recursive
+```
+
+### Accidentally Modified SANA Without Committing
+```bash
+cd 4KLSDB/models/sana
+git stash  # Save changes temporarily
+# or
+git reset --hard HEAD  # Discard changes
+```
+
+## Key Rules to Remember
+
+1. **Always commit SANA changes first**, then update main repo
+2. **Two-step process**: Push to SANA fork → Update main repo reference
+3. **Team coordination**: Tell teammates when you update SANA so they can pull
+4. **Use `git submodule update --recursive`** after pulling main repo changes
+5. **Document your SANA changes** in commit messages for the team
+
+## Quick Workflow Summary
+
+**For SANA changes:**
+```bash
+# 1. Change SANA
+cd models/sana
+# ... edit files ...
+git add . && git commit -m "Description" && git push origin main
+
+# 2. Update main repo
+cd ../..
+git add models/sana && git commit -m "Update SANA: Description" && git push origin main
+```
+
+**For getting updates:**
+```bash
+git pull origin main && git submodule update --recursive
+```
