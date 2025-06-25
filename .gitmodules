@@ -1,0 +1,3 @@
+[submodule "models/sana"]
+	path = models/sana
+	url = https://github.com/taco-group/SANA.git
