@@ -1,0 +1,17 @@
+4k-dataset-sr-t2i-finetuning/
+├── README.md                     # Main project overview
+├── docs/                         # Comprehensive documentation
+│   ├── setup/                   # Installation guides
+│   ├── datasets/                # Dataset documentation  
+│   ├── models/                  # Model-specific guides
+│   └── experiments/             # Experiment documentation
+├── models/                      # Model implementations
+│   ├── swinir/                  # SwinIR fine-tuning code
+│   ├── bsrgan/                  # BSRGAN fine-tuning code
+│   ├── osediff/                 # OSEDiff fine-tuning code
+│   └── sana/                    # SANA integration
+├── data/                        # Data handling scripts
+├── experiments/                 # Configs and results
+├── configs/                     # Model configurations
+├── scripts/                     # Utility scripts
+└── requirements/                # Environment specs
