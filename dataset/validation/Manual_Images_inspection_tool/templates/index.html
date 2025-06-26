@@ -1,0 +1,256 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Batch Image Quality Review</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin: 0; padding: 0; }
+    h1 { margin: 20px 0; }
+    /* Grid layout for images */
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+      padding: 10px;
+    }
+    .image-item {
+      position: relative;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border 0.3s, opacity 0.3s;
+    }
+    .image-item.bad {
+      border-color: red;
+      opacity: 0.6;
+    }
+    .image-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .page-controls {
+      margin: 20px;
+    }
+    .page-controls button {
+      margin: 0 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    /* Added styles for the page number buttons */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .page-button {
+      margin: 0 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+      background-color: #f0f0f0;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+    }
+    .page-button.active {
+      background-color: #007bff;
+      color: white;
+    }
+    .ellipsis {
+      margin: 0 5px;
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Batch Image Quality Review</h1>
+  <div class="image-grid" id="imageGrid"></div>
+  <div class="page-controls">
+    <button onclick="prevPage()">Previous</button>
+    <span id="pageInfo"></span>
+    <button onclick="nextPage()">Next</button>
+    <!-- Added direct page selection input -->
+    <input id="pageNumber" type="number" min="1" value="1" style="width: 60px;"/>
+    <button onclick="goToPage()">Go</button>
+  </div>
+  <!-- Added pagination display -->
+  <div id="paginationContainer" class="pagination"></div>
+
+  <script>
+    let currentPage = 1;
+    let totalPages = 1;
+    let totalImages = 0;
+    const limit = 100;
+
+    // Function to fetch the total number of images (only once at startup)
+    function fetchTotalImages() {
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", `/get_images?page=1&limit=${Number.MAX_SAFE_INTEGER}`, true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          const images = JSON.parse(xhr.responseText);
+          totalImages = images.length;
+          totalPages = Math.ceil(totalImages / limit);
+          // After we know the total pages, load the first page
+          loadImages(currentPage);
+        }
+      };
+      xhr.send();
+    }
+
+    // Function to load images for a given page
+    function loadImages(page) {
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", `/get_images?page=${page}&limit=${limit}`, true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          const images = JSON.parse(xhr.responseText);
+          displayImages(images);
+          currentPage = page; // update current page in case of direct page selection
+          document.getElementById('pageInfo').innerText = `Page ${currentPage} of ${totalPages}`;
+          // Update page number input field value to match the current page
+          document.getElementById('pageNumber').value = currentPage;
+          // Update the pagination buttons
+          updatePaginationButtons();
+        }
+      };
+      xhr.send();
+    }
+
+    // Function to display images in a grid
+    function displayImages(images) {
+      const grid = document.getElementById("imageGrid");
+      grid.innerHTML = "";
+      images.forEach(image => {
+        const div = document.createElement("div");
+        div.classList.add("image-item");
+        if (image.quality === "low") {
+          div.classList.add("bad");
+        }
+        div.setAttribute("data-id", image.id);
+        const img = document.createElement("img");
+        img.loading = "lazy";
+        img.src = image.url;
+        img.alt = "Image " + image.id;
+        div.appendChild(img);
+
+        // Clicking on an image toggles the bad quality flag
+        div.onclick = function() {
+          const id = this.getAttribute("data-id");
+          if (this.classList.contains("bad")) {
+            unmarkImageAsBad(id, this);
+          } else {
+            markImageAsBad(id, this);
+          }
+        };
+
+        grid.appendChild(div);
+      });
+    }
+
+    // Function to send a request to mark an image as bad quality
+    function markImageAsBad(id, element) {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "/update_quality", true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          element.classList.add("bad");
+        }
+      };
+      xhr.send("id=" + id + "&quality=low");
+    }
+
+    function unmarkImageAsBad(id, element) {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "/update_quality", true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          element.classList.remove("bad");
+        }
+      };
+      // Send an empty value or "null" to indicate unmarking.
+      xhr.send("id=" + id + "&quality=null");
+    }
+
+    // Navigation: Next page
+    function nextPage() {
+      if (currentPage < totalPages) {
+        loadImages(currentPage + 1);
+      }
+    }
+
+    // Navigation: Previous page
+    function prevPage() {
+      if (currentPage > 1) {
+        loadImages(currentPage - 1);
+      }
+    }
+
+    // Navigation: Direct page selection via input field
+    function goToPage() {
+      const inputPage = parseInt(document.getElementById("pageNumber").value);
+      if (inputPage && inputPage > 0 && inputPage <= totalPages) {
+        loadImages(inputPage);
+      }
+    }
+
+    // Function to create and update pagination buttons
+    function updatePaginationButtons() {
+      const container = document.getElementById("paginationContainer");
+      container.innerHTML = "";
+      
+      // Always show first page
+      addPageButton(1);
+      
+      // Add ellipsis if current page is far from the first page
+      if (currentPage > 4) {
+        addEllipsis();
+      }
+      
+      // Show a few pages around current page
+      const startPage = Math.max(2, currentPage - 2);
+      const endPage = Math.min(totalPages - 1, currentPage + 2);
+      
+      for (let i = startPage; i <= endPage; i++) {
+        if (i > 1 && i < totalPages) {
+          addPageButton(i);
+        }
+      }
+      
+      // Add ellipsis if current page is far from the last page
+      if (currentPage < totalPages - 3) {
+        addEllipsis();
+      }
+      
+      // Always show the last page if there are multiple pages
+      if (totalPages > 1) {
+        addPageButton(totalPages);
+      }
+      
+      function addPageButton(page) {
+        const button = document.createElement("button");
+        button.textContent = page;
+        button.className = "page-button";
+        if (page === currentPage) {
+          button.classList.add("active");
+        }
+        button.onclick = function() {
+          loadImages(page);
+        };
+        container.appendChild(button);
+      }
+      
+      function addEllipsis() {
+        const span = document.createElement("span");
+        span.textContent = "...";
+        span.className = "ellipsis";
+        container.appendChild(span);
+      }
+    }
+
+    // Start by fetching the total number of images, then load the first page
+    fetchTotalImages();
+  </script>
+</body>
+</html>
