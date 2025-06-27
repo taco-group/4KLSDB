@@ -1,5 +1,4 @@
-Here is your revised README, tailored to your actual preprocessing pipeline and including clear instructions for training SANA 1.5 with your already-curated WebDataset.
-
+# Section 1: SANA Model
 # SANA 1.5: Preprocessing and Training with Custom WebDataset
 
 This guide explains how to preprocess and train SANA 1.5 using your own high-resolution images and captions, leveraging your custom WebDataset pipeline.
