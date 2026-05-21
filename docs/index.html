@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="4KLSDB: A Large-Scale Dataset for 4K Image Restoration and Generation">
+
+    <title>4KLSDB</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/figures/teaser.jpg">
+    <link rel="shortcut icon" href="./assets/figures/teaser.jpg">
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@700;800;900&display=swap"
+        rel="stylesheet">
+    <!-- MathJax for LaTeX rendering -->
+    <script>MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };</script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f7fa;
+            --bg-card: rgba(0, 0, 0, 0.02);
+            --text-primary: #1a1a2e;
+            --text-secondary: #555770;
+            --text-muted: #8e91a4;
+            --accent-blue: #4a6cf7;
+            --accent-purple: #6c3fc5;
+            --accent-cyan: #0891b2;
+            --gradient-main: linear-gradient(135deg, #4a6cf7 0%, #6c3fc5 100%);
+            --gradient-glow: linear-gradient(135deg, rgba(74, 108, 247, 0.08), rgba(108, 63, 197, 0.08));
+            --border-subtle: rgba(0, 0, 0, 0.08);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --shadow-glow: 0 4px 24px rgba(74, 108, 247, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --container-width: 1200px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border-subtle);
+            transition: var(--transition);
+        }
+
+        nav .nav-inner {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        nav .nav-brand {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav .nav-links {
+            display: flex;
+            gap: 6px;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        nav .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        nav .nav-links a:hover {
+            color: var(--text-primary);
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .container {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 130px 24px 20px;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(74, 108, 247, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .brand-text {
+            display: inline-flex;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+        }
+
+        .brand-4k {
+            background: linear-gradient(270deg, #4a6cf7, #7c3aed, #e040fb, #4a6cf7);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 4s ease infinite;
+        }
+
+        .brand-lsdb {
+            background: linear-gradient(270deg, #ff5722, #ff9800, #ffc107, #ff5722);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 4s ease infinite 2s;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hero h1 {
+            font-size: 2.08rem;
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+
+        .hero .venue-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, rgba(74,108,247,0.08), rgba(108,63,197,0.08));
+            color: var(--accent-blue);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        .authors {
+            display: flex;
+            justify-content: center;
+            gap: 8px 20px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .authors a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-size: 1.08rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .authors a:hover { color: var(--accent-purple); }
+
+        .authors span.equal {
+            font-size: 0.75rem;
+            vertical-align: super;
+            color: var(--text-muted);
+        }
+
+        .affiliations {
+            color: var(--text-muted);
+            font-size: 0.98rem;
+            margin-bottom: 28px;
+        }
+
+        .link-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .link-buttons a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .link-buttons a:hover {
+            background: rgba(74, 108, 247, 0.06);
+            border-color: rgba(74, 108, 247, 0.25);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .teaser-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero-teaser { margin-bottom: 28px; }
+
+        .teaser-wrapper img {
+            width: 100%;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .teaser-caption {
+            text-align: justify;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-top: 12px;
+            padding: 0 10px;
+        }
+
+        .section { padding: 44px 0; }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-header h2::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: var(--gradient-main);
+            border-radius: 2px;
+            margin: 12px auto 0;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .abstract-text {
+            max-width: 900px;
+            margin: 0 auto;
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            text-align: justify;
+            padding: 0 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            max-width: 900px;
+            margin: 36px auto 0;
+            padding: 0 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 18px 12px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            border-color: rgba(74, 108, 247, 0.2);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .method-content { max-width: 1200px; margin: 0 auto; }
+
+        .method-content img {
+            width: 100%;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 24px;
+        }
+
+        .method-content p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 16px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ===== Results / Image Carousels ===== */
+        .image-compare {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            cursor: ew-resize;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .image-compare img {
+            display: block;
+            width: 100%;
+        }
+
+        .image-compare .overlay-clip {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 50%;
+            overflow: hidden;
+        }
+
+        .image-compare .overlay-clip img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+        }
+
+        .image-compare .slider-line {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .image-compare .slider-handle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.95);
+            border: 3px solid rgba(74, 108, 247, 0.6);
+            z-index: 11;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .image-compare .slider-handle::before {
+            content: '◀ ▶';
+            font-size: 10px;
+            color: #333;
+            letter-spacing: 2px;
+        }
+
+        .image-compare .label-lr,
+        .image-compare .label-ours {
+            position: absolute;
+            bottom: 12px;
+            padding: 4px 14px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 12;
+            pointer-events: none;
+        }
+
+        .image-compare .label-lr {
+            left: 12px;
+            background: rgba(239, 83, 80, 0.85);
+            color: white;
+        }
+
+        .image-compare .label-ours {
+            right: 12px;
+            background: rgba(74, 108, 247, 0.85);
+            color: white;
+        }
+
+        .hint-text {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 16px;
+        }
+
+        /* ===== Carousel ===== */
+        .carousel-wrapper { position: relative; max-width: 1200px; margin: 0 auto; }
+
+        .carousel-track {
+            display: flex;
+            gap: 24px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 24px;
+            scrollbar-width: none;
+        }
+
+        .carousel-track.no-transition {
+            scroll-behavior: auto !important;
+            scroll-snap-type: none !important;
+        }
+
+        .carousel-track::-webkit-scrollbar { display: none; }
+
+        .carousel-card {
+            min-width: 560px;
+            max-width: 560px;
+            flex-shrink: 0;
+            scroll-snap-align: start;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            transition: var(--transition);
+        }
+
+        .carousel-card:hover {
+            border-color: rgba(74, 108, 247, 0.2);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .carousel-card .image-compare img { border-bottom: 1px solid var(--border-subtle); }
+
+        .carousel-card .card-label {
+            padding: 12px 16px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-60%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            z-index: 5;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .carousel-nav:hover {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        .carousel-nav.prev { left: -20px; }
+        .carousel-nav.next { right: -20px; }
+
+        .result-category-block { margin-bottom: 48px; }
+
+        .category-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            padding-left: 4px;
+        }
+
+        /* ===== Table ===== */
+        .table-wrap {
+            max-width: 1100px;
+            margin: 0 auto 40px;
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+        }
+
+        table.results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 10px 14px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .results-table th {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .results-table tbody tr:hover { background: rgba(74, 108, 247, 0.03); }
+
+        .results-table td.method { text-align: left; font-weight: 500; color: var(--text-primary); }
+
+        .results-table td.best { font-weight: 700; color: var(--accent-blue); }
+
+        /* ===== Downloads ===== */
+        .downloads-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .download-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 20px 22px;
+            transition: var(--transition);
+        }
+
+        .download-card:hover {
+            border-color: rgba(74, 108, 247, 0.25);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .download-card h3 {
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .download-card p {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            margin-bottom: 12px;
+        }
+
+        .download-card .pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+        .download-card a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-decoration: none;
+            background: rgba(74, 108, 247, 0.08);
+            color: var(--accent-blue);
+            border: 1px solid rgba(74, 108, 247, 0.16);
+            transition: var(--transition);
+        }
+
+        .download-card a:hover {
+            background: var(--accent-blue);
+            color: #fff;
+        }
+
+        /* ===== BibTeX ===== */
+        .bibtex-wrapper { max-width: 920px; margin: 0 auto; position: relative; }
+
+        .bibtex-code {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 24px 28px;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+            word-break: normal;
+            overflow-wrap: anywhere;
+            overflow-x: auto;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 6px 14px;
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .copy-btn:hover {
+            background: rgba(0, 0, 0, 0.08);
+            color: var(--text-primary);
+        }
+
+        footer {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-subtle);
+            flex-wrap: wrap;
+        }
+
+        footer a { color: var(--accent-blue); text-decoration: none; }
+
+        .divider {
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 1px;
+            background: var(--border-subtle);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.55rem; }
+            .brand-text { font-size: 2.2rem; }
+            .authors a { font-size: 1.02rem; }
+            .affiliations { font-size: 0.92rem; }
+            nav .nav-links { display: none; }
+            .abstract-text { padding: 20px; }
+            .section { padding: 28px 0; }
+            .link-buttons a { padding: 8px 16px; font-size: 0.82rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .carousel-card { min-width: calc(100% - 16px); max-width: calc(100% - 16px); }
+            .carousel-track { gap: 16px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav id="top">
+        <div class="nav-inner">
+            <a href="#top" class="nav-brand">4KLSDB</a>
+            <div class="nav-links">
+                <a href="#abs">Abstract</a>
+                <a href="#dataset">Dataset</a>
+                <a href="#pipeline">Pipeline</a>
+                <a href="#results">Results</a>
+                <a href="#downloads">Downloads</a>
+                <a href="#bib">BibTeX</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="hero">
+        <div class="brand-row">
+            <div class="brand-text">
+                <span class="brand-4k">4K</span><span class="brand-lsdb">LSDB</span>
+            </div>
+        </div>
+
+        <div class="venue-badge">CVPR 2026 (Under Review)</div>
+
+        <h1>A Large-Scale Dataset for 4K Image Restoration and Generation</h1>
+
+        <div class="authors">
+            <a href="#">Zihao Zhu<span class="equal">1</span></a>
+            <a href="#">Kuan-Ru Huang<span class="equal">1</span></a>
+            <a href="#">Zhaoming Xu<span class="equal">1</span></a>
+            <a href="#">Renjie Li<span class="equal">1</span></a>
+            <a href="#">Bo Wu<span class="equal">1</span></a>
+            <a href="#">Ruizheng Bai<span class="equal">1</span></a>
+            <a href="#">Mingyang Wu<span class="equal">1</span></a>
+            <a href="#">Sayak Paul<span class="equal">2</span></a>
+            <a href="#">Zhengzhong Tu<span class="equal">†,1,3</span></a>
+        </div>
+
+        <p class="affiliations">
+            <sup>1</sup>Texas A&amp;M University &nbsp;&nbsp;
+            <sup>2</sup>Hugging Face &nbsp;&nbsp;
+            <sup>3</sup>Visko Platform
+            <br><span style="font-size:0.8rem;">† Corresponding author</span>
+        </p>
+
+        <div class="link-buttons">
+            <a href="#" id="link-paper"><i class="fa-solid fa-file-lines"></i> Paper (arXiv)</a>
+            <a href="https://github.com/taco-group/4KLSDB" id="link-code"><i class="fa-brands fa-github"></i> Code</a>
+            <a href="https://huggingface.co/datasets/SingleBicycle/4KLSDB" id="link-dataset"><i class="fa-solid fa-database"></i> Dataset</a>
+            <a href="https://huggingface.co/taco-group" id="link-model"><i class="fa-solid fa-cube"></i> Models</a>
+            <a href="#downloads" id="link-down"><i class="fa-solid fa-cloud-arrow-down"></i> Downloads</a>
+        </div>
+
+        <div class="teaser-wrapper hero-teaser">
+            <img src="assets/figures/teaser.jpg" alt="4KLSDB example images">
+            <p class="teaser-caption"><strong>Example images from 4KLSDB</strong> spanning nature, urban scenes,
+                people, food, CGI, artwork, and more. 4KLSDB contains 129,484 carefully curated native-4K training
+                images, 2,000 validation images, and 1,984 test images. The dataset is designed to support both
+                native-4K image restoration (super-resolution) and 4K text-to-image generation research.</p>
+        </div>
+    </div>
+
+    <!-- Abstract -->
+    <section class="section" id="abs">
+        <div class="container">
+            <div class="section-header">
+                <h2>Abstract</h2>
+            </div>
+            <div class="abstract-text">
+                High-resolution datasets are essential for advancing super-resolution (SR) and text-to-image (T2I)
+                diffusion research. However, current publicly available datasets lack both the native 4K resolution
+                and the extensive scale necessary for training state-of-the-art models. To address this gap, we
+                introduce a 4K Large Scale Dataset and Benchmark (<strong>4KLSDB</strong>), a large-scale, diverse
+                dataset consisting of <strong>129,484</strong> carefully curated 4K resolution images spanning
+                multiple categories such as nature, urban scenes, people, food, artwork, and CGI, alongside distinct
+                validation and test sets containing 2,000 and 1,984 images respectively. Images were sourced from
+                established open datasets including <em>Photo Concept Bucket</em>, <em>LAION-2B</em>, and
+                <em>PD12M</em>. 4KLSDB underwent rigorous multi-stage automated filtering and annotation pipelines
+                involving both human annotators and Large Multimodal Models (LMMs) to ensure high aesthetic quality
+                and dataset consistency. We demonstrate 4KLSDB's effectiveness by training representative
+                super-resolution and diffusion models, observing significant improvements in performance on native
+                4K benchmarks. Comprehensive experiments illustrate a positive correlation between training on true
+                4K resolution data and improved fidelity in image restoration, especially at 4K resolution.
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">129,484</div>
+                    <div class="stat-label">Train Images</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2,000</div>
+                    <div class="stat-label">Validation</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1,984</div>
+                    <div class="stat-label">Test</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3840+ px</div>
+                    <div class="stat-label">Native 4K</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Dataset Comparison -->
+    <section class="section" id="dataset">
+        <div class="container">
+            <div class="section-header">
+                <h2>Dataset</h2>
+                <p>4KLSDB is the first publicly released native-4K dataset that scales to over 100k images and
+                    supports both image restoration and generation.</p>
+            </div>
+            <div class="table-wrap">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Dataset</th>
+                            <th>#Train</th>
+                            <th>#Val</th>
+                            <th>#Test</th>
+                            <th>Max Res.</th>
+                            <th>Native 4K</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="method">DIV2K</td><td>800</td><td>100</td><td>100</td><td>2K</td><td>✗</td></tr>
+                        <tr><td class="method">LSDIR</td><td>84,991</td><td>1,000</td><td>1,000</td><td>2K</td><td>✗</td></tr>
+                        <tr><td class="method">DIV8K</td><td>1,500</td><td>100</td><td>100</td><td>8K</td><td>✓†</td></tr>
+                        <tr><td class="method">DiffusionDB</td><td>14,000,000</td><td>–</td><td>–</td><td>1024×1024</td><td>✗</td></tr>
+                        <tr><td class="method">HQ-Edit</td><td>~200,000</td><td>–</td><td>–</td><td>900×900</td><td>✗</td></tr>
+                        <tr style="background: rgba(74,108,247,0.05);">
+                            <td class="method"><strong>4KLSDB (Ours)</strong></td>
+                            <td class="best">129,484</td>
+                            <td class="best">2,000</td>
+                            <td class="best">1,984</td>
+                            <td class="best">4K</td>
+                            <td class="best">✓</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="text-align:center; color: var(--text-muted); font-size: 0.82rem;">
+                † DIV8K contains some 8K-resolution images, but its total scale remains limited for large-scale training.
+            </p>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Pipeline -->
+    <section class="section" id="pipeline">
+        <div class="container">
+            <div class="section-header">
+                <h2>Curation Pipeline</h2>
+                <p>A robust multi-stage filtering and quality-control pipeline combining rule-based checks,
+                    LMM-based aesthetic scoring, and human vetting.</p>
+            </div>
+            <div class="method-content">
+                <img src="assets/figures/filtering_pipeline.jpg" alt="4KLSDB filtering pipeline">
+                <p>
+                    <strong>Overview of the 4KLSDB filtering pipeline.</strong> An initial raw image pool is
+                    progressively refined through automated filters and a final manual inspection stage to obtain a
+                    high-quality, aesthetically aligned 4K dataset. Resolution-based pre-filtering enforces a
+                    minimum dimension of 3840 px and a $3840\times2160$ pixel budget. Q-Align is used to obtain
+                    quality and aesthetic scores, retaining the top 80%. Laplacian variance and Sobel-patch
+                    flatness ratio further remove overly flat, blurry, or low-texture samples. Two human annotators
+                    then review every remaining image, yielding the final native-4K dataset.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Results -->
+    <section class="section" id="results">
+        <div class="container">
+            <div class="section-header">
+                <h2>Benchmark Results</h2>
+                <p>Native-4K supervision consistently boosts both classical SR and real-world SR models.</p>
+            </div>
+
+            <h3 class="category-title">Classical Super-Resolution on 4KLSDB Test Set</h3>
+            <div class="table-wrap">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th colspan="2">×4</th>
+                            <th colspan="2">×8</th>
+                            <th colspan="2">×16</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th>PSNR↑</th><th>SSIM↑</th>
+                            <th>PSNR↑</th><th>SSIM↑</th>
+                            <th>PSNR↑</th><th>SSIM↑</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="method">HiT-SR (pretrained)</td><td>24.50</td><td>0.6839</td><td>22.25</td><td>0.6394</td><td>19.47</td><td>0.5741</td></tr>
+                        <tr style="background: rgba(74,108,247,0.05);"><td class="method"><strong>HiT-SR (4KLSDB)</strong></td><td class="best">29.27</td><td class="best">0.7896</td><td class="best">24.75</td><td class="best">0.6928</td><td class="best">23.69</td><td class="best">0.6414</td></tr>
+                        <tr><td class="method">SwinIR (DF2K)</td><td>24.11</td><td>0.6738</td><td>20.96</td><td>0.5915</td><td>19.20</td><td>0.5684</td></tr>
+                        <tr style="background: rgba(74,108,247,0.05);"><td class="method"><strong>SwinIR (4KLSDB)</strong></td><td class="best">28.79</td><td class="best">0.7774</td><td class="best">25.89</td><td class="best">0.6877</td><td class="best">23.69</td><td class="best">0.6376</td></tr>
+                        <tr><td class="method">MambaIR (pretrained)</td><td>25.92</td><td>0.7259</td><td>21.51</td><td>0.6382</td><td>19.47</td><td>0.5741</td></tr>
+                        <tr style="background: rgba(74,108,247,0.05);"><td class="method"><strong>MambaIR (4KLSDB)</strong></td><td class="best">30.92</td><td class="best">0.8216</td><td class="best">23.84</td><td class="best">0.7195</td><td class="best">23.69</td><td class="best">0.6414</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="category-title">Real-World Super-Resolution (4KLSDB Test Set)</h3>
+            <div class="table-wrap">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Method</th><th>Scale</th>
+                            <th>PSNR↑</th><th>SSIM↑</th>
+                            <th>LPIPS↓</th><th>DISTS↓</th>
+                            <th>FID↓</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="method">OSEDiff</td><td>×4</td><td>27.36 / <b>27.50</b></td><td>0.7511 / <b>0.7568</b></td><td>0.2863 / <b>0.2546</b></td><td>0.1604 / <b>0.1431</b></td><td>28.07 / <b>28.35</b></td></tr>
+                        <tr><td class="method">OSEDiff</td><td>×8</td><td>23.86 / <b>24.10</b></td><td>0.6021 / <b>0.6188</b></td><td>0.5463 / <b>0.4252</b></td><td>0.1833 / <b>0.1448</b></td><td>19.56 / <b>17.74</b></td></tr>
+                        <tr><td class="method">OSEDiff</td><td>×16</td><td>22.65 / <b>22.69</b></td><td><b>0.6213</b> / 0.5966</td><td>0.6571 / <b>0.4866</b></td><td>0.2861 / <b>0.2170</b></td><td>51.76 / <b>33.97</b></td></tr>
+                        <tr><td class="method">SeeSR</td><td>×4</td><td>27.01 / <b>28.25</b></td><td>0.6996 / <b>0.7340</b></td><td>0.5231 / <b>0.4511</b></td><td>0.1407 / <b>0.1272</b></td><td>38.95 / <b>33.88</b></td></tr>
+                        <tr><td class="method">SeeSR</td><td>×8</td><td>24.10 / <b>24.50</b></td><td>0.6510 / <b>0.6713</b></td><td>0.5117 / <b>0.4628</b></td><td>0.1607 / <b>0.1551</b></td><td>77.46 / <b>74.46</b></td></tr>
+                        <tr><td class="method">SeeSR</td><td>×16</td><td>24.02 / <b>24.43</b></td><td>0.6810 / <b>0.7001</b></td><td>0.5594 / <b>0.5197</b></td><td>0.1699 / <b>0.1640</b></td><td>77.41 / <b>74.40</b></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="hint-text">Each cell shows baseline / 4KLSDB fine-tuned. Bold marks the better result.</p>
+
+            <h3 class="category-title" style="margin-top: 40px;">4K Text-to-Image Generation (Sana fine-tuned on 4KLSDB)</h3>
+            <div class="table-wrap" style="max-width: 720px;">
+                <table class="results-table">
+                    <thead>
+                        <tr><th>Model</th><th>pCLIPScore ↑</th><th>pNIQE ↓</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="method">Sana (baseline)</td><td>28.62</td><td>5.21</td></tr>
+                        <tr style="background: rgba(74,108,247,0.05);"><td class="method"><strong>Sana + 4KLSDB</strong></td><td class="best">29.27</td><td class="best">4.63</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="category-title" style="margin-top: 40px;">User Study (Sana + 4KLSDB vs. Sana baseline)</h3>
+            <div class="table-wrap" style="max-width: 900px;">
+                <table class="results-table">
+                    <thead>
+                        <tr><th>Overall ↑</th><th>Detail ↑</th><th>Realism ↑</th><th>Artifact ↑</th><th>Alignment ↑</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: rgba(74,108,247,0.05);">
+                            <td class="best">57.34%</td><td class="best">60.89%</td><td class="best">74.27%</td>
+                            <td class="best">64.40%</td><td class="best">52.29%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="hint-text">Double-blind pairwise win rate of 4KLSDB-fine-tuned Sana over Sana baseline.</p>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Qualitative -->
+    <section class="section" id="qualitative">
+        <div class="container">
+            <div class="section-header">
+                <h2>Qualitative Comparisons</h2>
+                <p>Swipe or use arrows to browse comparisons across SR and T2I tasks.</p>
+            </div>
+
+            <div class="result-category-block">
+                <h3 class="category-title">Real-SR: SeeSR vs. SeeSR + 4KLSDB</h3>
+                <img src="assets/figures/seesr_compare.jpg" alt="SeeSR comparison" style="width:100%; border-radius:12px; border:1px solid var(--border-subtle);">
+                <p class="hint-text">From top to bottom: LR input, baseline SeeSR, and SeeSR fine-tuned on 4KLSDB (ours). Insets show sharper structures and more realistic local details.</p>
+            </div>
+
+            <div class="result-category-block">
+                <h3 class="category-title">T2I: Sana vs. Sana + 4KLSDB</h3>
+                <img src="assets/figures/sana_compare.jpg" alt="Sana T2I comparison" style="width:100%; border-radius:12px; border:1px solid var(--border-subtle);">
+                <p class="hint-text">Identical prompts and inference settings. Fine-tuning on 4KLSDB produces sharper boundaries and more coherent high-frequency textures in zoomed regions.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Downloads -->
+    <section class="section" id="downloads">
+        <div class="container">
+            <div class="section-header">
+                <h2>Downloads</h2>
+                <p>Dataset, code, and pretrained checkpoints are all openly released.</p>
+            </div>
+            <div class="downloads-grid">
+                <div class="download-card">
+                    <h3><i class="fa-solid fa-database"></i> Dataset</h3>
+                    <p>129,484 train · 2,000 val · 1,984 test native-4K images with captions.</p>
+                    <div class="pill-row">
+                        <a href="https://huggingface.co/datasets/SingleBicycle/4KLSDB"><i class="fa-solid fa-cloud-arrow-down"></i> HuggingFace</a>
+                    </div>
+                </div>
+                <div class="download-card">
+                    <h3><i class="fa-solid fa-image"></i> Classical SR Checkpoints</h3>
+                    <p>HiT-SR / SwinIR / MambaIR fine-tuned on 4KLSDB for ×4/×8/×16.</p>
+                    <div class="pill-row">
+                        <a href="https://huggingface.co/taco-group/4KLSDB-HiT-SR"><i class="fa-solid fa-cube"></i> HiT-SR</a>
+                        <a href="https://huggingface.co/taco-group/4KLSDB-SwinIR"><i class="fa-solid fa-cube"></i> SwinIR</a>
+                        <a href="https://huggingface.co/taco-group/4KLSDB-MambaIR"><i class="fa-solid fa-cube"></i> MambaIR</a>
+                    </div>
+                </div>
+                <div class="download-card">
+                    <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Real-World SR Checkpoints</h3>
+                    <p>OSEDiff / SeeSR fine-tuned on 4KLSDB blind-degradation pipeline.</p>
+                    <div class="pill-row">
+                        <a href="https://huggingface.co/taco-group/4KLSDB-OSEDiff"><i class="fa-solid fa-cube"></i> OSEDiff</a>
+                        <a href="https://huggingface.co/taco-group/4KLSDB-SeeSR"><i class="fa-solid fa-cube"></i> SeeSR</a>
+                    </div>
+                </div>
+                <div class="download-card">
+                    <h3><i class="fa-solid fa-palette"></i> 4K T2I Checkpoint</h3>
+                    <p>Sana fine-tuned on 4KLSDB for 4096×4096 text-to-image generation.</p>
+                    <div class="pill-row">
+                        <a href="https://huggingface.co/taco-group/4KLSDB-Sana"><i class="fa-solid fa-cube"></i> Sana 4K</a>
+                    </div>
+                </div>
+                <div class="download-card">
+                    <h3><i class="fa-brands fa-github"></i> Code</h3>
+                    <p>Training, inference, and one-click evaluation scripts for every model.</p>
+                    <div class="pill-row">
+                        <a href="https://github.com/taco-group/4KLSDB"><i class="fa-brands fa-github"></i> GitHub</a>
+                        <a href="https://github.com/taco-group/4KLSDB#-quick-start"><i class="fa-solid fa-rocket"></i> Quick Start</a>
+                    </div>
+                </div>
+                <div class="download-card">
+                    <h3><i class="fa-solid fa-file-lines"></i> Paper</h3>
+                    <p>4KLSDB: A Large-Scale Dataset for 4K Image Restoration and Generation.</p>
+                    <div class="pill-row">
+                        <a href="#"><i class="fa-solid fa-file-pdf"></i> arXiv</a>
+                        <a href="#bib"><i class="fa-solid fa-quote-right"></i> BibTeX</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- BibTeX -->
+    <section class="section" id="bib">
+        <div class="container">
+            <div class="section-header">
+                <h2>BibTeX</h2>
+            </div>
+            <div class="bibtex-wrapper">
+                <button class="copy-btn" onclick="copyBibtex()">
+                    <i class="fa-regular fa-clipboard"></i> Copy
+                </button>
+                <pre class="bibtex-code" id="bibtex-content">@article{zhu2026_4klsdb,
+  title   = {4KLSDB: A Large-Scale Dataset for 4K Image Restoration and Generation},
+  author  = {Zhu, Zihao and Huang, Kuan-Ru and Xu, Zhaoming and Li, Renjie and
+             Wu, Bo and Bai, Ruizheng and Wu, Mingyang and Paul, Sayak and Tu, Zhengzhong},
+  journal = {arXiv preprint arXiv:XXXX.XXXXX},
+  year    = {2026}
+}</pre>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <span>© 2026 4KLSDB Project · Built with the <a href="https://sparkvsr.github.io/">SparkVSR</a> template style</span>
+        <span>·</span>
+        <span><a href="https://taco-group.github.io">TACO Lab, Texas A&amp;M University</a></span>
+    </footer>
+
+    <script>
+        // Copy BibTeX
+        function copyBibtex() {
+            const text = document.getElementById('bibtex-content').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-clipboard"></i> Copy'; }, 2000);
+            });
+        }
+
+        // Nav scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) nav.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.08)';
+            else nav.style.boxShadow = 'none';
+        });
+    </script>
+
+</body>
+
+</html>

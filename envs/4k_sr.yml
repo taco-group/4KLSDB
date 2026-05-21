@@ -1,0 +1,38 @@
+name: 4k_sr
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - pytorch=2.1.0
+  - torchvision=0.16.0
+  - pytorch-cuda=12.1
+  - pip:
+      # BasicSR / classical SR
+      - basicsr==1.4.2
+      - addict
+      - lmdb
+      - opencv-python
+      - pyyaml
+      - tb-nightly
+      - tqdm
+      - yapf
+      # Mamba state-space (MambaIR)
+      - mamba-ssm==1.1.1
+      - causal-conv1d==1.1.1
+      # Diffusers stack (OSEDiff / SeeSR)
+      - diffusers==0.27.2
+      - transformers==4.39.3
+      - accelerate==0.29.3
+      - safetensors
+      - peft
+      - xformers==0.0.23
+      # Metrics
+      - lpips
+      - DISTS-pytorch
+      - pyiqa
+      - scikit-image
+      - matplotlib
+      - huggingface_hub
