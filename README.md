@@ -5,7 +5,7 @@
 <p><strong><a href="https://openreview.net/forum?id=VW0Fvdfv1k">DataCV @ CVPR 2026</a> · Accepted 🎉</strong></p>
 
 <p>
-  <a href="https://taco-group.github.io/4KLSDB/"><img src="https://img.shields.io/badge/Project%20Page-4KLSDB-4a6cf7?style=flat-square" alt="Project Page"></a>
+  <a href="https://4klsdb.github.io/"><img src="https://img.shields.io/badge/🌐%20Project%20Page-4klsdb.github.io-4a6cf7?style=flat-square" alt="Project Page"></a>
   <a href="https://huggingface.co/datasets/SingleBicycle/4KLSDB"><img src="https://img.shields.io/badge/🤗%20Dataset-4KLSDB-FF6F00?style=flat-square" alt="Dataset"></a>
   <a href="https://huggingface.co/datasets/SingleBicycle/4KLSDB/tree/main/ckpts"><img src="https://img.shields.io/badge/🤗%20Checkpoints-ckpts%2F-FF6F00?style=flat-square" alt="Checkpoints"></a>
   <a href="https://openreview.net/forum?id=VW0Fvdfv1k"><img src="https://img.shields.io/badge/Paper-OpenReview-b31b1b?style=flat-square" alt="OpenReview"></a>
