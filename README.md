@@ -1,6 +1,6 @@
 <div align="center">
 
-# 4KLSDB: A Large-Scale Dataset for 4K Image Restoration and Text-to-Image Generation
+# 4KLSDB: A Large-Scale Dataset for 4K Image Restoration and Generation
 
 <p><strong><a href="https://openreview.net/forum?id=VW0Fvdfv1k">DataCV @ CVPR 2026</a> · Accepted 🎉</strong></p>
 
@@ -290,7 +290,7 @@ If you find 4KLSDB useful for your research, please cite:
 
 ```bibtex
 @inproceedings{zhu2026_4klsdb,
-  title     = {4KLSDB: A Large-Scale Dataset for 4K Image Restoration and Text-to-Image Generation},
+  title     = {4KLSDB: A Large-Scale Dataset for 4K Image Restoration and Generation},
   author    = {Zhu, Zihao and Huang, Kuan-Ru and Xu, Zhaoming and Li, Renjie and
                Wu, Bo and Bai, Ruizheng and Wu, Mingyang and Paul, Sayak and Tu, Zhengzhong},
   booktitle = {DataCV @ CVPR 2026},
