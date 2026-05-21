@@ -5,7 +5,7 @@
 <p>
   <a href="https://taco-group.github.io/4KLSDB/"><img src="https://img.shields.io/badge/Project%20Page-4KLSDB-4a6cf7?style=flat-square" alt="Project Page"></a>
   <a href="https://huggingface.co/datasets/SingleBicycle/4KLSDB"><img src="https://img.shields.io/badge/🤗%20Dataset-4KLSDB-FF6F00?style=flat-square" alt="Dataset"></a>
-  <a href="https://huggingface.co/taco-group"><img src="https://img.shields.io/badge/🤗%20Models-TACO%20Group-FF6F00?style=flat-square" alt="Models"></a>
+  <a href="https://huggingface.co/datasets/SingleBicycle/4KLSDB/tree/main/ckpts"><img src="https://img.shields.io/badge/🤗%20Checkpoints-ckpts%2F-FF6F00?style=flat-square" alt="Checkpoints"></a>
   <a href="#-citation"><img src="https://img.shields.io/badge/Paper-arXiv-b31b1b?style=flat-square" alt="arXiv"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License"></a>
 </p>
@@ -100,18 +100,28 @@ Categories covered: nature, urban scenes, people, food, artwork, CGI, animals, a
 
 ## 🧱 Pre-trained Models
 
-All checkpoints are mirrored under the [`taco-group`](https://huggingface.co/taco-group) organisation on Hugging Face.
+All 4KLSDB-fine-tuned checkpoints live alongside the dataset under
+[`SingleBicycle/4KLSDB/ckpts/`](https://huggingface.co/datasets/SingleBicycle/4KLSDB/tree/main/ckpts).
 
-| Family               | Model      | Checkpoint                                                              | Best for |
-|----------------------|------------|-------------------------------------------------------------------------|----------|
-| Classical SR         | HiT-SR     | [taco-group/4KLSDB-HiT-SR](https://huggingface.co/taco-group/4KLSDB-HiT-SR)         | ×4 / ×8 / ×16 PSNR/SSIM |
-| Classical SR         | SwinIR     | [taco-group/4KLSDB-SwinIR](https://huggingface.co/taco-group/4KLSDB-SwinIR)         | ×4 / ×8 / ×16 PSNR/SSIM |
-| Classical SR         | MambaIR    | [taco-group/4KLSDB-MambaIR](https://huggingface.co/taco-group/4KLSDB-MambaIR)       | strongest classical SR  |
-| Real-World SR        | OSEDiff    | [taco-group/4KLSDB-OSEDiff](https://huggingface.co/taco-group/4KLSDB-OSEDiff)       | one-step diffusion SR   |
-| Real-World SR        | SeeSR      | [taco-group/4KLSDB-SeeSR](https://huggingface.co/taco-group/4KLSDB-SeeSR)           | semantics-aware Real-SR |
-| 4K T2I Generation    | Sana 4096  | [taco-group/4KLSDB-Sana](https://huggingface.co/taco-group/4KLSDB-Sana)             | native 4096×4096 T2I    |
+| Family               | Model      | Path on Hub                                                                                                                     | Best for                |
+|----------------------|------------|---------------------------------------------------------------------------------------------------------------------------------|-------------------------|
+| Classical SR         | HiT-SR     | [`ckpts/hit_sr/`](https://huggingface.co/datasets/SingleBicycle/4KLSDB/tree/main/ckpts/hit_sr)                                  | ×4 / ×8 / ×16 PSNR/SSIM |
+| Classical SR         | SwinIR     | [`ckpts/swinir/`](https://huggingface.co/datasets/SingleBicycle/4KLSDB/tree/main/ckpts/swinir)                                  | ×4 / ×8 / ×16 PSNR/SSIM |
+| Classical SR         | MambaIR    | [`ckpts/mambair/`](https://huggingface.co/datasets/SingleBicycle/4KLSDB/tree/main/ckpts/mambair)                                | strongest classical SR  |
+| Real-World SR        | OSEDiff    | [`ckpts/osediff/x4/`](https://huggingface.co/datasets/SingleBicycle/4KLSDB/tree/main/ckpts/osediff)                             | one-step diffusion SR   |
+| Real-World SR        | SeeSR      | [`ckpts/seesr/`](https://huggingface.co/datasets/SingleBicycle/4KLSDB/tree/main/ckpts/seesr)                                    | semantics-aware Real-SR |
+| 4K T2I Generation    | Sana 4096² | [`ckpts/sana/`](https://huggingface.co/datasets/SingleBicycle/4KLSDB/tree/main/ckpts/sana)                                      | native 4096×4096 T2I    |
 
-> A single command to grab **all** of them is provided in [`scripts/download_all_ckpts.sh`](scripts/download_all_ckpts.sh).
+> One-shot download of every model:
+>
+> ```bash
+> bash scripts/download_all_ckpts.sh        # → release_ckpts/<model>/
+> ```
+
+> **New (May 2026):** the dataset now ships an authoritative
+> [`metadata.jsonl`](https://huggingface.co/datasets/SingleBicycle/4KLSDB/blob/main/metadata.jsonl)
+> with **Qwen2.5-VL-7B** recaptions for all 129,484 training images.
+> Use this for T2I fine-tuning instead of the older `caption` column in the parquet shards.
 
 ---
 

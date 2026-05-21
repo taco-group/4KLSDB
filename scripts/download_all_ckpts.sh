@@ -1,36 +1,35 @@
 #!/usr/bin/env bash
 # Download every 4KLSDB-fine-tuned checkpoint into ./release_ckpts/<model>/
+# All ckpts live inside the dataset repo, under ckpts/<model>/.
 # Requires: pip install -U "huggingface_hub[cli]"
 
 set -euo pipefail
 
 DEST="${1:-release_ckpts}"
-HF_ORG="taco-group"
+REPO="SingleBicycle/4KLSDB"
 
 mkdir -p "$DEST"
 
 echo "==> Destination: $DEST"
-echo "==> HF org:      $HF_ORG"
+echo "==> Source:      hf://$REPO/ckpts/"
 echo
 
-# (repo_id, sub-folder name on disk)
-MODELS=(
-    "${HF_ORG}/4KLSDB-HiT-SR   hit_sr"
-    "${HF_ORG}/4KLSDB-SwinIR   swinir"
-    "${HF_ORG}/4KLSDB-MambaIR  mambair"
-    "${HF_ORG}/4KLSDB-OSEDiff  osediff"
-    "${HF_ORG}/4KLSDB-SeeSR    seesr"
-    "${HF_ORG}/4KLSDB-Sana     sana"
-)
+MODELS=(hit_sr swinir mambair osediff seesr sana)
 
-for entry in "${MODELS[@]}"; do
-    set -- $entry
-    REPO=$1
-    SUB=$2
-    echo "==> Downloading $REPO → $DEST/$SUB"
-    huggingface-cli download "$REPO" --local-dir "$DEST/$SUB" --local-dir-use-symlinks False
-    echo
+for m in "${MODELS[@]}"; do
+    echo "==> Downloading ckpts/$m"
+    huggingface-cli download "$REPO" --repo-type dataset \
+        --include "ckpts/$m/*" \
+        --local-dir "$DEST"
+    # Flatten: $DEST/ckpts/<m> -> $DEST/<m>
+    if [[ -d "$DEST/ckpts/$m" ]]; then
+        mkdir -p "$DEST"
+        rsync -a --remove-source-files "$DEST/ckpts/$m/" "$DEST/$m/" 2>/dev/null \
+            || cp -r "$DEST/ckpts/$m/." "$DEST/$m/"
+    fi
 done
+rm -rf "$DEST/ckpts"
 
+echo
 echo "✓ All checkpoints downloaded to $DEST/"
-echo "  hit_sr/   swinir/   mambair/   osediff/   seesr/   sana/"
+echo "  $(ls "$DEST" | tr '\n' ' ')"
