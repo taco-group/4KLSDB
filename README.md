@@ -289,17 +289,14 @@ Double-blind user study win rate of **Sana + 4KLSDB** over **Sana**: **57.3% ove
 If you find 4KLSDB useful for your research, please cite:
 
 ```bibtex
-@article{zhu2026_4klsdb,
-  title         = {4KLSDB: A Large-Scale Dataset for 4K Image Restoration and Generation},
-  author        = {Zhu, Zihao and Huang, Kuan-Ru and Xu, Zhaoming and Li, Renjie and
-                   Wu, Bo and Bai, Ruizheng and Wu, Mingyang and Paul, Sayak and Tu, Zhengzhong},
-  year          = {2026},
-  eprint        = {2605.24762},
-  archivePrefix = {arXiv},
-  primaryClass  = {cs.CV},
-  url           = {https://arxiv.org/abs/2605.24762},
-  doi           = {10.48550/arXiv.2605.24762},
-  note          = {Accepted to DataCV Workshop @ CVPR 2026}
+@misc{zhu20264klsdblargescaledataset4k,
+      title={4KLSDB: A Large-Scale Dataset for 4K Image Restoration and Generation}, 
+      author={Zihao Zhu and Kuan-Ru Huang and Zhaoming Xu and Renjie Li and Bo Wu and Ruizheng Bai and Mingyang Wu and Sayak Paul and Zhengzhong Tu},
+      year={2026},
+      eprint={2605.24762},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2605.24762}, 
 }
 ```
 
