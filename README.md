@@ -2,13 +2,13 @@
 
 # 4KLSDB: A Large-Scale Dataset for 4K Image Restoration and Generation
 
-<p><strong><a href="https://openreview.net/forum?id=VW0Fvdfv1k">DataCV @ CVPR 2026</a> · Accepted 🎉</strong></p>
+<p><strong><a href="https://arxiv.org/abs/2605.24762">DataCV @ CVPR 2026</a> · Accepted 🎉</strong></p>
 
 <p>
+  <a href="https://arxiv.org/abs/2605.24762"><img src="https://img.shields.io/badge/arXiv-2605.24762-b31b1b?style=flat-square&logo=arxiv&logoColor=white" alt="arXiv"></a>
   <a href="https://4klsdb.github.io/"><img src="https://img.shields.io/badge/🌐%20Project%20Page-4klsdb.github.io-4a6cf7?style=flat-square" alt="Project Page"></a>
   <a href="https://huggingface.co/datasets/SingleBicycle/4KLSDB"><img src="https://img.shields.io/badge/🤗%20Dataset-4KLSDB-FF6F00?style=flat-square" alt="Dataset"></a>
   <a href="https://huggingface.co/datasets/SingleBicycle/4KLSDB/tree/main/ckpts"><img src="https://img.shields.io/badge/🤗%20Checkpoints-ckpts%2F-FF6F00?style=flat-square" alt="Checkpoints"></a>
-  <a href="https://openreview.net/forum?id=VW0Fvdfv1k"><img src="https://img.shields.io/badge/Paper-OpenReview-b31b1b?style=flat-square" alt="OpenReview"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License"></a>
 </p>
 
@@ -250,7 +250,7 @@ Double-blind user study win rate of **Sana + 4KLSDB** over **Sana**: **57.3% ove
 4KLSDB/
 ├── README.md                     # this file
 ├── docs/                         # GitHub Pages project page (index.html)
-│   ├── index.html                # https://taco-group.github.io/4KLSDB/
+│   ├── index.html                # https://4klsdb.github.io/
 │   └── assets/                   # teaser & figure JPGs used by the project page
 ├── envs/
 │   ├── 4k_sr.yml                 # classical SR + real-SR (HiT-SR / SwinIR / MambaIR / OSEDiff / SeeSR)
@@ -289,13 +289,17 @@ Double-blind user study win rate of **Sana + 4KLSDB** over **Sana**: **57.3% ove
 If you find 4KLSDB useful for your research, please cite:
 
 ```bibtex
-@inproceedings{zhu2026_4klsdb,
-  title     = {4KLSDB: A Large-Scale Dataset for 4K Image Restoration and Generation},
-  author    = {Zhu, Zihao and Huang, Kuan-Ru and Xu, Zhaoming and Li, Renjie and
-               Wu, Bo and Bai, Ruizheng and Wu, Mingyang and Paul, Sayak and Tu, Zhengzhong},
-  booktitle = {DataCV @ CVPR 2026},
-  year      = {2026},
-  url       = {https://openreview.net/forum?id=VW0Fvdfv1k}
+@article{zhu2026_4klsdb,
+  title         = {4KLSDB: A Large-Scale Dataset for 4K Image Restoration and Generation},
+  author        = {Zhu, Zihao and Huang, Kuan-Ru and Xu, Zhaoming and Li, Renjie and
+                   Wu, Bo and Bai, Ruizheng and Wu, Mingyang and Paul, Sayak and Tu, Zhengzhong},
+  year          = {2026},
+  eprint        = {2605.24762},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CV},
+  url           = {https://arxiv.org/abs/2605.24762},
+  doi           = {10.48550/arXiv.2605.24762},
+  note          = {Accepted to DataCV Workshop @ CVPR 2026}
 }
 ```
 
