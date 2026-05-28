@@ -15,10 +15,10 @@
 <p>
   <strong>Zihao Zhu</strong><sup>1</sup>, Kuan-Ru Huang<sup>1</sup>, Zhaoming Xu<sup>1</sup>, Renjie Li<sup>1</sup>,
   Bo Wu<sup>1</sup>, Ruizheng Bai<sup>1</sup>, Mingyang Wu<sup>1</sup>, Sayak Paul<sup>2</sup>,
-  <strong>Zhengzhong Tu</strong><sup>†,1,3</sup>
+  <strong>Zhengzhong Tu</strong><sup>†,1</sup>
 </p>
 
-<p><sup>1</sup>Texas A&M University &nbsp;&nbsp; <sup>2</sup>Hugging Face &nbsp;&nbsp; <sup>3</sup>Visko Platform</p>
+<p><sup>1</sup>Texas A&M University &nbsp;&nbsp; <sup>2</sup>Hugging Face &nbsp;&nbsp;</p>
 
 <img src="docs/assets/figures/teaser.jpg" width="92%" alt="4KLSDB teaser">
 
